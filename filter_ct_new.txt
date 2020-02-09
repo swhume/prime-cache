@@ -1,0 +1,2 @@
+($_url == "/mdr/ct/packages")
+("/ct/" in $_url) and ("terms" not in $_url) and ("2019-09-27" in $_url or "root" in $_url)

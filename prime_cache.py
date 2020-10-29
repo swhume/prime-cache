@@ -38,7 +38,7 @@ class LinkCrawler:
         """
         self.base_url = args.base_url
         self.resource = args.start_resource
-        self.headers = {"Accept": args.media_type, "api-key": args.api_key}
+        self.headers = {"Accept": args.media_type, "User-Agent": "crawler", "api-key": args.api_key}
         self.verbose = args.verbose
         self.log_path = args.log_path
         log_file_name = os.path.join(args.log_path, args.log_file)

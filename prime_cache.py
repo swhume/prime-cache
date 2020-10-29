@@ -36,11 +36,9 @@ class LinkCrawler:
         """
         :param args: object containing the argparse CLI arguments - documented in set_cmd_line_args()
         """
-        self.user = args.username
-        self.pwd = args.password
         self.base_url = args.base_url
         self.resource = args.start_resource
-        self.headers = {"Accept": args.media_type}
+        self.headers = {"Accept": args.media_type, "api-key": args.api_key}
         self.verbose = args.verbose
         self.log_path = args.log_path
         log_file_name = os.path.join(args.log_path, args.log_file)
@@ -60,7 +58,7 @@ class LinkCrawler:
             resource = self.urls.pop()
             request_time = datetime.datetime.now()
             self.logger.info(f"Requested: {request_time.strftime('%m/%d/%Y, %H:%M:%S')} - {resource}")
-            r = requests.get(self.base_url + resource, headers=self.headers, auth=(self.user, self.pwd))
+            r = requests.get(self.base_url + resource, headers=self.headers)
             self.tested_urls.add(resource)
             if r.status_code == 200:
                 self.logger.info(f"Received: {str(datetime.datetime.now() - request_time).split('.')[0]} - {resource}")
@@ -127,7 +125,7 @@ class LinkCrawler:
         elif "vnd.ms-excel" in self.headers["Accept"] or "text/csv" in self.headers["Accept"]:
             content_dict = {}
         else:
-            raise ValueError("Unknown media type: " + self.headers)
+            raise ValueError("Unknown media type: " + self.headers["Accept"])
         return content_dict
 
     def _link_finder(self, json_input, lookup_key):
@@ -200,19 +198,18 @@ class LinkCrawler:
 def set_cmd_line_args():
     """
     command-line arguments - set defaults to something convenient to simplify launching
-    e.g. -r /mdr/ct/packages -u user_tester -p TeamCd1sc3443! -b https://library.cdisc.org/api -m application/json
-    qa e.g. -r /mdr/ct/packages -b https://cdisc-mdsp-qa.nurocorcloud.com/api -m application/json -u shume -p MdspNow9009!
-    -r /mdr/sdtm/1-8 -b https://cdisc-mdsp-qa.nurocorcloud.com/api -m application/json -u shume -p MdspNow9009!
-    -r /mdr/sdtm/1-8 -b https://library.cdisc.org/api -m application/json -u shume@cdisc.org -p password -f prime_cache_filters.txt
+    e.g. -r /mdr/ct/packages -a e9a7d1b9bf1a4036ae7b123456081565 -b https://library.cdisc.org/api -m application/json
+    qa e.g. -r /mdr/ct/packages -b https://cdisc-mdsp-qa.nurocorcloud.com/api -m application/json -a e9a7d1b9bf1a4036ae7b123456081565
+    -r /mdr/sdtm/1-8 -b https://cdisc-mdsp-qa.nurocorcloud.com/api -m application/json -a e9a7d1b9bf1a4036ae7b123456081565
+    -r /mdr/sdtm/1-8 -b https://library.cdisc.org/api -m application/json -a e9a7d1b9bf1a4036ae7b123456081565 -f prime_cache_filters.txt
     """
     data_path = os.path.dirname(os.path.realpath(__file__))
     parser = argparse.ArgumentParser()
-    parser.add_argument("-b", "--base_url", dest="base_url", help="SHARE API base URL", default="https://mdsp-qa.nurocorcloud.com/api")
-    parser.add_argument("-r", "--resource", dest="start_resource", help="SHARE API resource", default="/mdr/ct/packages")
+    parser.add_argument("-a", "--api_key", help="API Key", dest="api_key", required=True)
+    parser.add_argument("-b", "--base_url", dest="base_url", help="Library API base URL", default="https://library.cdisc.org/api")
+    parser.add_argument("-r", "--resource", dest="start_resource", help="Library API resource", default="/mdr/ct/packages")
     parser.add_argument("-l", "--log_file", help="log file name", default="link_log.txt", dest="log_file")
     parser.add_argument("-d", "--log_dir", help="path to log and config file directory", default=data_path, dest="log_path")
-    parser.add_argument("-u", "--user", help="SHARE API username", default="shume", dest="username")
-    parser.add_argument("-p", "--pwd", help="SHARE API password", default="MdspNow9009!", dest="password")
     parser.add_argument("-m", "--media_type", help="media_type", default="application/json", dest="media_type")
     parser.add_argument("-v", "--verbose", dest="verbose", help="verbose", default=False, required=False)
     parser.add_argument("-f", "--filter", help="filter file name", default="prime_cache_filters.txt", dest="filter")

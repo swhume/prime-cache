@@ -8,11 +8,10 @@ content to obviate the performance issues for certain non-cached content.
 prime-cache.py is the only program file. It uses a command-line interface.
 
 Command-line parameters include:
+* -a is the api-key needed for authentication (required)
 * -r is the starting resource
 * -b is the base url
 * -m is the media-type (application/json is the default)
-* -u is the username
-* -p is the password
 * -f is the filter file (after the starting resource only those that pass the filter are requested)
 
 The filter restricts those API URLs that will be requested by the program. A filter consists
@@ -24,9 +23,9 @@ Or, an example of controlled terminology filters include:
 * ("/ct/" in $_url) and ("terms" not in $_url) and ("2019-09-27" in $_url or "root" in $_url)
 
 ## CLI Examples
-* prime_cache -r /mdr/sdtm/1-8 -b https://library.cdisc.org/api -m application/json -u shume@cdisc.org -p password -f prime_cache_filters.txt
+* prime_cache -r /mdr/sdtm/1-8 -b https://library.cdisc.org/api -m application/json -a e9a7d1b9bf1a4036ae7b123456081565 -f prime_cache_filters.txt
 
-* prime_cache -r /mdr/sdtmig/3-1-2 -b https://library.cdisc.org/api -m application/json -u shume@cdisc.org -p password -f filter_sdtmig.txt
+* prime_cache -r /mdr/sdtmig/3-1-2 -b https://library.cdisc.org/api -m application/json -a e9a7d1b9bf1a4036ae7b123456081565 -f filter_sdtmig.txt
 
 ## Important Usage Notes
 * Start with an empty tested_urls.txt to retrieve all API resources (URLs) that pass the filters
